@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <chrono>
 // #include <redblacktree.h>
 // #include <hashmap.h>
 
@@ -31,13 +32,26 @@ bool getDataStructure()
 
 void printAll(/*example object(s)*/)
 {
+	auto start = std::chrono::high_resolution_clock::now();
+	auto stop = start;
 	// Ask for which data structure
 	if (getDataStructure())
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call print all for red/black tree
-		;
+
+		//std::string one = "asfjasdklfjakljfkladfjklasfadlfjtestljkjflkajfklajdlfjadflk";
+		//int count = one.find("test");
+		stop = std::chrono::high_resolution_clock::now();
+	}
 	else
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call print all for hash map
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Execution Time: " << duration.count() << " microseconds" << std::endl;
 }
 
 void searchTitle(/*example object(s)*/)
@@ -47,13 +61,23 @@ void searchTitle(/*example object(s)*/)
 	std::string input;
 	std::cin >> input;
 	std::cout << std::endl;
+	auto start = std::chrono::high_resolution_clock::now();
+	auto stop = start;
 	// Ask for which data structure
 	if (getDataStructure())
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchTitle for red/black tree
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
 	else
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchTitle for hash map
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Execution Time: " << duration.count() << " microseconds" << std::endl;
 }
 
 void searchGenre(/*example object(s)*/)
@@ -63,13 +87,24 @@ void searchGenre(/*example object(s)*/)
 	std::string input;
 	std::cin >> input;
 	std::cout << std::endl;
+	auto start = std::chrono::high_resolution_clock::now();
+	auto stop = start;
 	// Ask for which data structure
 	if (getDataStructure())
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchGenre for red/black tree
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
+		
 	else
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchGenre for hash map
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Execution Time: " << duration.count() << " microseconds" << std::endl;
 }
 
 void searchCategory(/*example object(s)*/)
@@ -85,13 +120,23 @@ void searchCategory(/*example object(s)*/)
 		if (input == "1" || input == "2")
 			break;			
 	}
+	auto start = std::chrono::high_resolution_clock::now();
+	auto stop = start;
 	// Ask for which data structure
 	if (getDataStructure())
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchCategory for red/black tree
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
 	else
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchCategory for hash map
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Execution Time: " << duration.count() << " microseconds" << std::endl;
 }
 
 void searchYear(/*example object(s)*/)
@@ -101,13 +146,23 @@ void searchYear(/*example object(s)*/)
 	int input;
 	std::cin >> input;
 	std::cout << std::endl;
+	auto start = std::chrono::high_resolution_clock::now();
+	auto stop = start;
 	// Ask for which data structure
 	if (getDataStructure())
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchYear for red/black tree
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
 	else
+	{
+		start = std::chrono::high_resolution_clock::now();
 		// Call searchYear for hash map
-		;
+		stop = std::chrono::high_resolution_clock::now();
+	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Execution Time: " << duration.count() << " microseconds" << std::endl;
 }
 
 
@@ -121,7 +176,9 @@ int main()
 	while (true)
 	{
 		std::cout << "Welcome to Steamify, please select a command [1-6]" << std::endl;
-
+		std::cout << "[1] Print all games\n" << "[2] Search by Title\n" << "[3] Search by Genre\n"
+			<< "[4] Search by Single/Multiplayer\n" << "[5] Search by Release Year\n"
+			<< "[6] Exit" << std::endl;
 		std::string command;
 		std::cin >> command;
 		std::cout << std::endl;
