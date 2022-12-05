@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Game.h"
 #include "Node.h"
 #pragma once
 
@@ -32,6 +31,7 @@ class HashMap
 
 HashMap::~HashMap()
 {
+    // Delete linked list from each index of array
 
     for (int i = 0; i < tableSize; i++)
     {
@@ -66,12 +66,14 @@ unsigned long HashMap::hashFunction(std::string title)
 }
 
 int HashMap::reduce(unsigned long hash)
-{   
+{
     return hash % tableSize;
 }
 
 void HashMap::reHash(Node** newTable, Node* node)
 {
+    // Go through each value in the linked list and re insert into newTable with new index
+
     unsigned long hash = hashFunction(node->getKey());
     int index = reduce(hash);
 
@@ -96,6 +98,7 @@ void HashMap::reHash(Node** newTable, Node* node)
 
 void HashMap::checkLoadFactor()
 {
+    // If load factor is > 0.8, double array size and rehash
     float loadFactor = 0.8;
     if (((float) buckets / tableSize) >= loadFactor)
     {
@@ -125,10 +128,14 @@ void HashMap::checkLoadFactor()
 
 void HashMap::insert(std::string title, Game* game)
 {
+    // Hash and reduce the title
     unsigned long hash = hashFunction(title);
     int index = reduce(hash);
     Node* node = new Node(title, game);
 
+    // If the table's value at index is empty, insert directly
+    // Otherwise, add to end of linked list
+    
     if (table[index]) 
     {
         Node* head = table[index];

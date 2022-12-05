@@ -12,7 +12,6 @@ class Node
         Game* getValue();
         void setNext(Node* node);
         Node* getNext();
-        int z = 4;
 
     private:
         std::string key;
