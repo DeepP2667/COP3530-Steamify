@@ -1,10 +1,12 @@
 // [djb2 Hash Function] - https://theartincode.stanis.me/008-djb2/
+// Hash Maps lecture slides
+// Seperate chaining lecture slides
 
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Node.h"
-#pragma once
+#include "HashNode.h"
 
 using namespace std;
 
@@ -13,20 +15,21 @@ class HashMap
     public:
         ~HashMap();
         void insert(std::string title, Game* game);
-        Game* getByTitle(std::string title);
-        std::vector<std::string> getByGenre(std::string genre);
-        std::vector<std::string> getByYear(std::string year);
-        std::vector<std::string> getByCategory(std::string category);
+        void printAll();
+        void getByTitle(std::string title);
+        void getByGenre(std::string genre);
+        void getByRelease(std::string release);
+        void getByCategory(std::string category);
 
     private:
         int buckets = 0;
         int tableSize = 50;
-        Node** table = new Node*[50]();
+        HashNode** table = new HashNode*[50]();
 
         unsigned long hashFunction(std::string title);
         int reduce(unsigned long hash);
         void checkLoadFactor();
-        void reHash(Node** newTable, Node* node);
+        void reHash(HashNode** newTable, HashNode* node);
 };
 
 HashMap::~HashMap()
@@ -37,8 +40,8 @@ HashMap::~HashMap()
     {
         if (table[i])
         {
-            Node* head = table[i];
-            Node* next = nullptr;
+            HashNode* head = table[i];
+            HashNode* next = nullptr;
 
             while (head != nullptr)
             {
@@ -70,7 +73,7 @@ int HashMap::reduce(unsigned long hash)
     return hash % tableSize;
 }
 
-void HashMap::reHash(Node** newTable, Node* node)
+void HashMap::reHash(HashNode** newTable, HashNode* node)
 {
     // Go through each value in the linked list and re insert into newTable with new index
 
@@ -81,8 +84,8 @@ void HashMap::reHash(Node** newTable, Node* node)
 
     if (newTable[index]) 
     {
-        Node* head = newTable[index];
-        Node* temp = head;
+        HashNode* head = newTable[index];
+        HashNode* temp = head;
 
         while (temp->getNext() != nullptr)
         {
@@ -103,14 +106,14 @@ void HashMap::checkLoadFactor()
     if (((float) buckets / tableSize) >= loadFactor)
     {
         tableSize *= 2;
-        Node** newTable = new Node*[tableSize]();
+        HashNode** newTable = new HashNode*[tableSize]();
         for (int i = 0; i < tableSize / 2; i++)
         {
             if (table[i])
             {
-                Node* head = table[i];
-                Node* temp = head;
-                Node* next = nullptr;
+                HashNode* head = table[i];
+                HashNode* temp = head;
+                HashNode* next = nullptr;
 
                 while (temp != nullptr)
                 {
@@ -131,18 +134,27 @@ void HashMap::insert(std::string title, Game* game)
     // Hash and reduce the title
     unsigned long hash = hashFunction(title);
     int index = reduce(hash);
-    Node* node = new Node(title, game);
+    HashNode* node = new HashNode(title, game);
 
     // If the table's value at index is empty, insert directly
     // Otherwise, add to end of linked list
-    
     if (table[index]) 
     {
-        Node* head = table[index];
-        Node* temp = head;
+        HashNode* head = table[index];
+        HashNode* temp = head;
+
+        if (temp->getKey() == title)
+        {
+            return;
+        }
+
         while (temp->getNext() != nullptr)
         {
             temp = temp->getNext();
+            if (temp->getKey() == title)
+            {
+                return;
+            }
         }
         temp->setNext(node);
     }
@@ -155,21 +167,49 @@ void HashMap::insert(std::string title, Game* game)
     checkLoadFactor();
 }
 
-Game* HashMap::getByTitle(std::string title)
+void HashMap::printAll()
+{
+    int printAmount = tableSize;
+    int printedGames = 0;
+
+    int index = 0;
+
+    while (printedGames < printAmount)
+    {
+        if (table[index])
+        {
+            HashNode* head = table[index];
+            while (head != nullptr)
+            {
+                head->getValue()->PrintInfo();
+                head = head->getNext();
+                printedGames++;
+                if (printedGames > printAmount)
+                {
+                    break;
+                }
+            }
+        }
+        index++;
+    }
+}
+
+void HashMap::getByTitle(std::string title)
 {
     unsigned long hash = hashFunction(title);
     int index = reduce(hash);
     Game* game = nullptr;
 
-    if (table[index]) 
+    if (table[index])
     {
-        Node* head = table[index];
-        Node* temp = head;
+        HashNode* head = table[index];
+        HashNode* temp = head;
         while (temp != nullptr)
         {
             if (temp->getKey() == title)
             {
                 game = temp->getValue();
+                game->PrintInfo();
                 break;
             }
             temp = temp->getNext();
@@ -183,73 +223,59 @@ Game* HashMap::getByTitle(std::string title)
     {
         std::cout << "Game not found" << endl;
     }
-
-    return game;
 }
 
-std::vector<std::string> HashMap::getByGenre(std::string genre)
+void HashMap::getByGenre(std::string genre)
 {
-    std::vector<std::string> games;
-
     for (int i = 0; i < tableSize; i++)
     {
-        Node* head = table[i];
-        Node* temp = head;
+        HashNode* head = table[i];
+        HashNode* temp = head;
         while (temp != nullptr)
         {
-            if (temp->getValue()->genre == genre)
+            if (temp->getValue()->GetGenre() == genre)
             {
-                games.push_back(temp->getKey());
+                temp->getValue()->PrintInfo();
             }
             temp = temp->getNext();
         }
     }
-
-    return games;
 }
 
-std::vector<std::string> HashMap::getByYear(std::string year)
+void HashMap::getByRelease(std::string release)
 {
-    std::vector<std::string> games;
-
     for (int i = 0; i < tableSize; i++)
     {
-        Node* head = table[i];
-        Node* temp = head;
+        HashNode* head = table[i];
+        HashNode* temp = head;
         while (temp != nullptr)
         {
-            if (temp->getValue()->releaseYear == year)
+            if (temp->getValue()->GetYear() == release)
             {
-                games.push_back(temp->getKey());
+                temp->getValue()->PrintInfo();
             }
             temp = temp->getNext();
         }
     }
-
-    return games;
 }
 
-std::vector<std::string> HashMap::getByCategory(std::string category)
+void HashMap::getByCategory(std::string category)
 {
-    std::vector<std::string> games;
-
     for (int i = 0; i < tableSize; i++)
     {
-        Node* head = table[i];
-        Node* temp = head;
+        HashNode* head = table[i];
+        HashNode* temp = head;
         while (temp != nullptr)
         {
-            if (category == "Single" && temp->getValue()->isSingle)
+            if (category == "Singleplayer" && temp->getValue()->IsSingle())
             {
-                games.push_back(temp->getKey());
+                temp->getValue()->PrintInfo();
             }
-            if (category == "Multi" && temp->getValue()->isMulti)
+            if (category == "Multiplayer" && temp->getValue()->IsMulti())
             {
-                games.push_back(temp->getKey());
+                temp->getValue()->PrintInfo();
             }
             temp = temp->getNext();
         }
     }
-
-    return games;
 }

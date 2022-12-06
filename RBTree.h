@@ -1,32 +1,8 @@
 #pragma once
-#include <string>
 #include <iostream>
+#include <string>
+#include "Game.h"
 using namespace std;
-
-class Game {
-    string title;
-    string genre;
-    bool singleplayer;
-    bool multiplayer;
-    string releaseYear;
-public:
-    Game(string t, string g, bool s, bool m, string r) : title(t), genre(g), singleplayer(s), multiplayer(m), releaseYear(r) {}
-    Game() :title(""), genre(""), singleplayer(false), multiplayer (false), releaseYear("") {}
-    string GetTitle() { return title; }
-    string GetGenre() { return genre; }
-    bool IsMulti() { return multiplayer; }
-    bool IsSingle() { return singleplayer; }
-    string GetYear() { return releaseYear; }
-    void PrintInfo() {
-        cout << "Title:\t\t" << title << endl;
-        cout << "Genre:\t\t" << genre << endl;
-        if (singleplayer)
-            cout << "Type:\t\t" << "Singleplayer" << endl;
-        else
-            cout << "Type:\t\t" << "Multiplayer" << endl;
-        cout << "Release Year:\t" << releaseYear << endl<<endl;
-    }
-};
 
 //AVL TreeNode lecture 4 slide 26
 //AVL Project Breakdown Session
@@ -129,36 +105,13 @@ class RBTree {
             ReleaseHelper(head->left, r);
         }
     }
-    Node* root;
-    Node* parentInsert = nullptr;
-public:
-    RBTree() : root(nullptr) {}
-    ~RBTree() {
-        RemovePostOrder(root);
-    }
-    Node* GetRoot() { return root; }
-    void SearchByTitle(string t) {
-        TitleHelper(root, t);    
-    }
-    void SearchByGenre(string g) {
-        GenreHelper(root, g);
-    }
-    void SearchBySingleMulti(bool s, bool m) {
-        SingleMultiHelper(root, s, m);
-    }
-    void SearchByRelease(string r){
-        ReleaseHelper(root, r);
-    }
-    void PrintRoot() {
-        root->PrintInfo();
-    }
-    void PrintInOrder(Node* head) {
+    void PrintInOrderHelper(Node* head) {
         if (head == nullptr)
             cout << "";
         else {
-            PrintInOrder(head->left);
+            PrintInOrderHelper(head->left);
             head->GetGame().PrintInfo();
-            PrintInOrder(head->right);
+            PrintInOrderHelper(head->right);
         }
     }
     void RightRotation(Node* node) {
@@ -242,20 +195,6 @@ public:
         else
             LeftRotation(currGP);
     }
-    void Insert(string title, string genre, bool single, bool multi, string release) {
-        root = InsertHelp(root, root, title, genre, single, multi, release);
-        if (root->NumChildren() == 0)
-            root->red = false;
-        if (parentInsert != nullptr && parentInsert->red) {
-            Node* inserted;
-            if (parentInsert->right != nullptr && parentInsert->right->GetGame().GetTitle() == title)
-                inserted = parentInsert->right;
-            else
-                inserted = parentInsert->left;
-            parentInsert = nullptr;
-            BalanceTree(inserted);
-        }
-    }
     void RemovePostOrder(Node* head) {
         if (head == nullptr)
             cout << "";
@@ -270,5 +209,46 @@ public:
         head->left = nullptr;
         head->parent = nullptr;
         delete head;
+    }
+    Node* root;
+    Node* parentInsert = nullptr;
+
+public:
+    RBTree() : root(nullptr) {}
+    ~RBTree() {
+        RemovePostOrder(root);
+    }
+    Node* GetRoot() { return root; }
+    void Insert(string title, Game* game) {
+        root = InsertHelp(root, root, title, game->GetGenre(), game->IsSingle(), game->IsMulti(), game->GetYear());
+        if (root->NumChildren() == 0)
+            root->red = false;
+        if (parentInsert != nullptr && parentInsert->red) {
+            Node* inserted;
+            if (parentInsert->right != nullptr && parentInsert->right->GetGame().GetTitle() == title)
+                inserted = parentInsert->right;
+            else
+                inserted = parentInsert->left;
+            parentInsert = nullptr;
+            BalanceTree(inserted);
+        }
+    }
+    void SearchByTitle(string t) {
+        TitleHelper(root, t);    
+    }
+    void SearchByGenre(string g) {
+        GenreHelper(root, g);
+    }
+    void SearchBySingleMulti(bool s, bool m) {
+        SingleMultiHelper(root, s, m);
+    }
+    void SearchByRelease(string r){
+        ReleaseHelper(root, r);
+    }
+    void PrintRoot() {
+        root->PrintInfo();
+    }
+    void PrintInOrder(){
+        PrintInOrderHelper(root);
     }
 };
