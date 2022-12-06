@@ -5,7 +5,8 @@
 #include <iomanip>
 #include <fstream>
 // #include "redblacktree.h"
-// #include "hashmap.h"
+#include "HashMap.h"
+#include "Game.h"
 
 void loadCSV(/*HashMap& hash, RBTree& tree*/)
 {
@@ -18,13 +19,11 @@ void loadCSV(/*HashMap& hash, RBTree& tree*/)
 		std::string lineFromFile;
 		while (getline(inFile, lineFromFile))
 		{
-			//std::cout << "first line" << std::endl;
 			std::istringstream stream(lineFromFile);
 			std::string line = stream.str();
 			std::string::difference_type n = std::count(line.begin(), line.end(), ',');
-			//std::cout << line << std::endl << n << std::endl;
 			bool released = (line.find("Coming soon") == std::string::npos);
-			std::string name;
+			std::string title;
 			if ( (n > 4 && !released) || (n > 5 && released) )
 			{
 				// there is at least 1 extra comma in the name section
@@ -36,18 +35,17 @@ void loadCSV(/*HashMap& hash, RBTree& tree*/)
 
 				for (int i = 0; i <= extraComs; i++)
 				{
-					std::string tempName;
-					getline(stream, tempName, ',');
-					name = name + tempName;
+					std::string tempTitle;
+					getline(stream, tempTitle, ',');
+					title = title + tempTitle;
 					if (i != extraComs)
-						name = name + ",";
+						title = title + ",";
 				}
-				//std::cout << line << std::endl;
 			}
 			else
 			{
 				// normal structure for name
-				getline(stream, name, ',');
+				getline(stream, title, ',');
 			}
 
 			// genre
@@ -74,8 +72,11 @@ void loadCSV(/*HashMap& hash, RBTree& tree*/)
 			getline(stream, date);
 			date = date.substr(1);
 
-			// hash.insert(name, genre, single, multi, date);
-			// tree.insert(name, genre, single, multi, date);
+			// insert into data structures
+
+			// Game::Game game(title, genre, single, multi, date);
+			// hash.insert(name, game);
+			// tree.insert(name, game);
 		}
 	}
 }
@@ -246,7 +247,7 @@ int main()
 {
 
 	// 2 variables of each data structure
-	// HashMap hash;
+	// HashMap::HashMap hash;
 	// RBTree tree;
 
 	while (true)
